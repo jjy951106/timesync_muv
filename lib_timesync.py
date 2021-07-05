@@ -112,7 +112,7 @@ if __name__ == '__main__':
                 if connectionIndex == 1:
                     monitor.fc_port = mavutil.mavlink_connection("/dev/ttyACM0") # /dev/ttyACM0 or /dev/ttyACM1
                 elif connectionIndex == 2:
-                    print(mavutil.mavlink_connection("/dev/ttyACM1"))
+                    monitor.fc_port = mavutil.mavlink_connection("/dev/ttyACM1")
                 elif connectionIndex == 3:
                     monitor.fc_port = mavutil.mavlink_connection("/dev/ttyAMA0")
                 elif connectionIndex == 4:
