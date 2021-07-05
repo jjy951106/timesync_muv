@@ -108,9 +108,7 @@ class Monitor(Thing):
         
         if self.fc_port != None:
 
-            HOST = "1.239.197.74" # 1.239.197.74
-            PORT = 5005
-            ADDR = (HOST, PORT)
+            ADDR = (self.server_addr, self.server_port)
 
             count = tmp = fc_lt = 0
             N = 10 # this is needed to reduce

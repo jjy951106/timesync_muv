@@ -82,7 +82,7 @@ if __name__ == '__main__':
     '''
     예시: argv[n] = [파라미터 = default value]
     argv[1] = [서버주소 = keti 서버]
-    argv[2] = [업로드 주기 = 1초]
+    argv[2] = [업로드 주기 = 3초]
     argv[3] = [소켓 프로토콜 = udp]
     argv[4] = [동기화 문턱 값 = 5ms]
     argv[5] = [동기화 port = 5005]
@@ -91,7 +91,7 @@ if __name__ == '__main__':
 
     if len(argv) < 2: monitor.server_addr = '1.239.197.74'
     else : monitor.server_addr = argv[1]
-    if len(argv) < 3: monitor.interval = 1   # Interval for offset report to Mobius (second)
+    if len(argv) < 3: monitor.interval = 3   # Interval for offset report to Mobius (second)
     else : monitor.interval = int( argv[2] )
     if len(argv) < 4: monitor.trans_protocol = 'udp'
     else : monitor.trans_protocol = argv[3]
