@@ -1,4 +1,3 @@
-# Version 1.3,  2020-05-14
 from tis.oneM2M import *
 from device.synch import *
 from socket import *
