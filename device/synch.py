@@ -128,7 +128,7 @@ class Monitor(Thing):
             time.sleep(2)
 
             try:
-                message = fc_port.recv_match(type='PARAM_VALUE', blocking=True).to_dict()
+                message = self.fc_port.recv_match(type='PARAM_VALUE', blocking=True).to_dict()
                 print(message['param_id'], message['param_value'])
             except Exception as e:
                 print(e)
