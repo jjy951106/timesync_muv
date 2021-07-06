@@ -103,30 +103,24 @@ if __name__ == '__main__':
 
     connection = False
     connectionIndex = 1
+    connectionLink = ['/dev/ttyACM0', '/dev/ttyACM1', '/dev/ttyAMA0',\
+                      '/dev/serial0', '/dev/serial1', 'COM6']
 
     # Serial port for FC connection
     # e. g. -> argv[6] = "com4" or "/dev/ttyUSB0" 
     if len(argv) < 7: 
         while(connection is False):
             try:
-                if connectionIndex == 1:
-                    monitor.fc_port = mavutil.mavlink_connection("/dev/ttyACM0") # /dev/ttyACM0 or /dev/ttyACM1
-                elif connectionIndex == 2:
-                    monitor.fc_port = mavutil.mavlink_connection("/dev/ttyACM1")
-                elif connectionIndex == 3:
-                    monitor.fc_port = mavutil.mavlink_connection("/dev/ttyAMA0")
-                elif connectionIndex == 4:
-                    monitor.fc_port = mavutil.mavlink_connection("/dev/serial0") # USB0
-                else:
-                    monitor.fc_port = mavutil.mavlink_connection("/dev/serial1") # USB1
+                fc_port = mavutil.mavlink_connection(connectionLink[connectionIndex])
                 connection = True
+                print('Success OpenLink {}'.format(connectionLink[connectionIndex]))
             except:
                 connectionIndex = connectionIndex + 1
+                if connectionIndex == len(connectionLink): connectionIndex = 0
                 pass
     else : 
         monitor.fc_port = mavutil.mavlink_connection(argv[6])
     
-
     # Define resource
     container_name = lib["data"][0]
     monitor.topic = '/MUV/data/' + lib["name"] + '/' + container_name
