@@ -104,10 +104,10 @@ if __name__ == '__main__':
     connection = False
     connectionIndex = 1
     connectionLink = ['/dev/ttyACM0', '/dev/ttyACM1', '/dev/ttyAMA0',\
-                      '/dev/serial0', '/dev/serial1', 'COM6']
+                      '/dev/serial0', '/dev/serial1']
 
     # Serial port for FC connection
-    # e. g. -> argv[6] = "com4" or "/dev/ttyUSB0" 
+    # e. g. -> argv[6] = "COMx" or "/dev/ttyx" 
     if len(argv) < 7: 
         while(connection is False):
             try:
@@ -116,7 +116,7 @@ if __name__ == '__main__':
                 print('Success OpenLink {}'.format(connectionLink[connectionIndex]))
             except:
                 connectionIndex = connectionIndex + 1
-                if connectionIndex == len(connectionLink): connectionIndex = 0
+                if connectionIndex == len(connectionLink): break
                 pass
     else : 
         monitor.fc_port = mavutil.mavlink_connection(argv[6])
