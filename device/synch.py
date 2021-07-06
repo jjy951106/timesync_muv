@@ -123,7 +123,7 @@ class Monitor(Thing):
             # For Ardupilot
             self.fc_port.mav.param_set_send( self.fc_port.target_system, self.fc_port.target_component, b'BRD_RTC_TYPES',\
                                              settings['BRD_RTC_TYPES'], mavutil.mavlink.MAV_PARAM_TYPE_INT32 )
-
+            
             self.fc_port.mav.param_request_read_send( self.fc_port.target_system, self.fc_port.target_component, b'BRD_RTC_TYPES', -1 )
             time.sleep(2)
 
@@ -141,7 +141,7 @@ class Monitor(Thing):
             while True:
 
                 self.fc_port.mav.system_time_send( int(time.time() * 1e6) , 0 )
-                msg = self.fc_port.recv_match(type='SYSTEM_TIME',blocking=True)
+                msg = self.fc_port.recv_match(type='SYSTEM_TIME', blocking=True)
                 if msg.time_unix_usec > 10: break    
             
             start = time.time()
@@ -154,7 +154,7 @@ class Monitor(Thing):
                 self.fc_port.mav.timesync_send(0, int( tx_time ))
 
                 # Time sync message reception
-                msg = self.fc_port.recv_match(type='TIMESYNC',blocking=True)
+                msg = self.fc_port.recv_match(type='TIMESYNC', blocking=True)
                 if msg.tc1 == 0:
                     continue
                 else:
@@ -168,15 +168,9 @@ class Monitor(Thing):
                 self.fc_time = float( msg.time_unix_usec / 1e6 )
                 self.fc_offset = int( ( (self.fc_time + self.fc_lt) - now ) * 1000 )
                 
-                """
-                print("\n----------------------------------------------------------------------------")
-                print("msg : {}\nfc_time : {}\nfc_offset : {}\nnow : {}".format(msg, fc_time, fc_offset, now))
-                print("----------------------------------------------------------------------------\n")
-                """
-                
                 # send ms measure
                 count = count + 1
-                tmp = tmp + (fc_offset / settings['TransmitPacket'])
+                tmp = tmp + (self.fc_offset / settings['TransmitPacket'])
                 if count is settings['TransmitPacket']:
                     enteredTime = time.time() - start
                     if settings['SendTerm'] - enteredTime >= 0:
@@ -190,11 +184,7 @@ class Monitor(Thing):
                     
                     # startTime initialization
                     start = time.time()
-                    
-                    """
-                    print('(Transmission Packet, Interval) : ({}, {}s)\n(EnteredTime, SleepTime) : ({:.3f}, {:.3f})'\
-                           .format(settings['TransmitPacket'], settings['SendTerm'], enteredTime, settings['SendTerm'] - enteredTime))
-                    """
+
         else:
             return
 
