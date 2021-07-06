@@ -159,14 +159,14 @@ class Monitor(Thing):
                     continue
                 else:
                     rx_time = dt.timestamp(dt.now())
-                    if fc_lt != 0: fc_lt = (fc_lt + (rx_time - tx_time) / 2 ) / 2
-                    else: fc_lt = (rx_time - tx_time) / 2 
+                    if self.fc_lt != 0: self.fc_lt = (self.fc_lt + (rx_time - tx_time) / 2 ) / 2
+                    else: self.fc_lt = (rx_time - tx_time) / 2 
 
                 # System time message reception
                 msg = self.fc_port.recv_match(type='SYSTEM_TIME',blocking=True)
                 now = float( dt.timestamp( dt.now() ) - self.fc_port.time_since('SYSTEM_TIME') )
-                fc_time = float( msg.time_unix_usec / 1e6 )
-                fc_offset = int( ( (fc_time + fc_lt) - now ) * 1000 )
+                self.fc_time = float( msg.time_unix_usec / 1e6 )
+                self.fc_offset = int( ( (self.fc_time + self.fc_lt) - now ) * 1000 )
                 
                 """
                 print("\n----------------------------------------------------------------------------")
