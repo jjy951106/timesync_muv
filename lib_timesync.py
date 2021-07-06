@@ -111,7 +111,7 @@ if __name__ == '__main__':
     if len(argv) < 7: 
         while(connection is False):
             try:
-                fc_port = mavutil.mavlink_connection(connectionLink[connectionIndex])
+                monitor.fc_port = mavutil.mavlink_connection(connectionLink[connectionIndex])
                 connection = True
                 print('Success OpenLink {}'.format(connectionLink[connectionIndex]))
             except:
