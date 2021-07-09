@@ -69,16 +69,26 @@ class Monitor(Thing):
             elif self.trans_protocol == 'udp':
                 self._protocol = 0
             
-            # Time offset calculation
-            mc_offset = subprocess.getoutput( self.client_sw + ' 3 ' + self.server_addr + ' ' + self.server_port + ' ' + str(self._protocol) )
+            received_offset = False
             
-            data_temp = mc_offset.split('+')
-            del data_temp[-1]
+            while received_offset:
             
-            payload = dict()
-            payload['server'] = dt.fromtimestamp( float( data_temp[0] ) ).astimezone(timezone('Asia/Seoul')).strftime('%Y%m%dT%H%M%S%f')[:-3]
-            payload['mc_time'] = dt.fromtimestamp( float( data_temp[1] ) ).astimezone(timezone('Asia/Seoul')).strftime('%Y%m%dT%H%M%S%f')[:-3]
-            payload['mc_offset'] = int( data_temp[2] )
+                # Time offset calculation
+                mc_offset = subprocess.getoutput( self.client_sw + ' 3 ' + self.server_addr + ' ' + self.server_port + ' ' + str(self._protocol) )
+                
+                data_temp = mc_offset.split('+')
+                del data_temp[-1]
+                
+                payload = dict()
+                
+                try:
+                    payload['server'] = dt.fromtimestamp( float( data_temp[0] ) ).astimezone(timezone('Asia/Seoul')).strftime('%Y%m%dT%H%M%S%f')[:-3]
+                    payload['mc_time'] = dt.fromtimestamp( float( data_temp[1] ) ).astimezone(timezone('Asia/Seoul')).strftime('%Y%m%dT%H%M%S%f')[:-3]
+                    payload['mc_offset'] = int( data_temp[2] )
+                except IndexError:
+                    continue
+                
+                received_offset = True
 
             # Check the FC connection
             if self.fc_port == None:
