@@ -128,8 +128,7 @@ class Monitor(Thing):
         }
         
         connectionIndex = 1
-        connectionLink = ['/dev/ttyACM0', '/dev/ttyACM1',\
-                          '/dev/serial0', '/dev/serial1']
+        connectionLink = ['/dev/ttyACM0', '/dev/ttyACM1']
         
         if self.fc_port != None:
 
