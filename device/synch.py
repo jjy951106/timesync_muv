@@ -155,6 +155,7 @@ class Monitor(Thing):
                     connection = False
                     while(connection is False):
                         try:
+                            print('try')
                             self.fc_port = mavutil.mavlink_connection(self.connectionLink)
                             connection = True
                             print('Success ReOpenLink {}'.format(self.connectionLink))
