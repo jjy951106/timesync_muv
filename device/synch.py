@@ -127,7 +127,7 @@ class Monitor(Thing):
             'BRD_RTC_TYPES'  : 3,   # GPS, MAVLINK
         }
         
-        if self.fc_port != None:
+        if self.fc_port == None:
 
             ADDR = (self.server_addr, int(self.server_port))
 
