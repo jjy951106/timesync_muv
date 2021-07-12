@@ -159,6 +159,7 @@ class Monitor(Thing):
                             connection = True
                             print('Success ReOpenLink {}'.format(self.connectionLink))
                         except:
+                            time.sleep(1)
                             pass
             
             start = time.time()
