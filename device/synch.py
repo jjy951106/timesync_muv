@@ -195,7 +195,7 @@ class Monitor(Thing):
                     print('{} is dead'.format(self.connectionLink))
                     self.fc_port = None
                     connection = False
-                    time.sleep(10)
+                    time.sleep(15)
                     while(connection is False):
                         try:
                             print('try')
@@ -203,6 +203,7 @@ class Monitor(Thing):
                             connection = True
                             print('Success ReOpenLink {}'.format(self.connectionLink))
                         except:
+                            time.sleep(10)
                             pass
                     continue  
 
