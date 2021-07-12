@@ -8,6 +8,9 @@ import platform
 import json
 import time
 from socket import *
+import serial
+from serial import SerialException
+
 # Warning!! In each class, one must implement only one method among get and control methods
 
 # Uplink class (for time offset monitoring)
@@ -170,7 +173,7 @@ class Monitor(Thing):
                     self.fc_time = float( msg.time_unix_usec / 1e6 )
                     self.fc_offset = int( ( (self.fc_time + self.fc_lt) - now ) * 1000 )
                 
-                except SerialException:
+                except SerialException as ex:
                     print('error')
                     pass
                 
