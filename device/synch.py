@@ -8,8 +8,6 @@ import platform
 import json
 import time
 from socket import *
-import serial
-from serial import SerialException
 
 # Warning!! In each class, one must implement only one method among get and control methods
 
@@ -127,79 +125,82 @@ class Monitor(Thing):
             'BRD_RTC_TYPES'  : 3,   # GPS, MAVLINK
         }
         
-        if self.fc_port == None:
+        if self.fc_port != None:
 
             ADDR = (self.server_addr, int(self.server_port))
 
             count = tmp = fc_lt = 0
             sock = socket(AF_INET, SOCK_DGRAM)
             
-            try:
-                # For Ardupilot
-                self.fc_port.mav.param_set_send( self.fc_port.target_system, self.fc_port.target_component, b'BRD_RTC_TYPES',\
-                                                settings['BRD_RTC_TYPES'], mavutil.mavlink.MAV_PARAM_TYPE_INT32 )
+            while True:
             
-                # Interval initialize
-                self.fc_port.mav.request_data_stream_send( self.fc_port.target_system, self.fc_port.target_system, 0, settings['DataRate'], 1 )
-
-            except:
-                pass
+                try:
+                    # For Ardupilot
+                    self.fc_port.mav.param_set_send( self.fc_port.target_system, self.fc_port.target_component, b'BRD_RTC_TYPES',\
+                                                     settings['BRD_RTC_TYPES'], mavutil.mavlink.MAV_PARAM_TYPE_INT32 )
+                except:
+                    pass
             
-            try:
+                try:
+                    # Interval initialize
+                    self.fc_port.mav.request_data_stream_send( self.fc_port.target_system, self.fc_port.target_system, 0, settings['DataRate'], 1 )
+                except:
+                    continue
             
-                # Set FC time
-                while True:
-                            
-                    self.fc_port.mav.system_time_send( int(time.time() * 1e6) , 0 )
-                    msg = self.fc_port.recv_match(type='SYSTEM_TIME', blocking=True)
-                    print(msg)
-                    if msg.time_unix_usec > 10: break
+                try:    
+                    # Set FC time
+                    while True:
                         
+                        self.fc_port.mav.system_time_send( int(time.time() * 1e6) , 0 )
+                        msg = self.fc_port.recv_match(type='SYSTEM_TIME', blocking=True)
+                        print(msg)
+                        if msg.time_unix_usec > 10: break
+                    
                     start = time.time()
+                    
+                    while True:
+
+                        # Send timesync
+                        tx_time = dt.timestamp(dt.now())
+
+                        self.fc_port.mav.timesync_send(0, int( tx_time ))
+
+                        # Time sync message reception
+                        msg = self.fc_port.recv_match(type='TIMESYNC', blocking=True)
+                        if msg.tc1 == 0:
+                            continue
+                        else:
+                            rx_time = dt.timestamp(dt.now())
+                            if self.fc_lt != 0: self.fc_lt = (self.fc_lt + (rx_time - tx_time) / 2 ) / 2
+                            else: self.fc_lt = (rx_time - tx_time) / 2 
+
+                        # System time message reception
+                        msg = self.fc_port.recv_match(type='SYSTEM_TIME',blocking=True)
+                        now = float( dt.timestamp( dt.now() ) - self.fc_port.time_since('SYSTEM_TIME') )
+                        self.fc_time = float( msg.time_unix_usec / 1e6 )
+                        self.fc_offset = int( ( (self.fc_time + self.fc_lt) - now ) * 1000 )
                         
-                while True:
-
-                    # Send timesync
-                    tx_time = dt.timestamp(dt.now())
-
-                    self.fc_port.mav.timesync_send(0, int( tx_time ))
-
-                    # Time sync message reception
-                    msg = self.fc_port.recv_match(type='TIMESYNC', blocking=True)
-                    if msg.tc1 == 0:
-                        continue
-                    else:
-                        rx_time = dt.timestamp(dt.now())
-                        if self.fc_lt != 0: self.fc_lt = (self.fc_lt + (rx_time - tx_time) / 2 ) / 2
-                        else: self.fc_lt = (rx_time - tx_time) / 2 
-
-                    # System time message reception
-                    msg = self.fc_port.recv_match(type='SYSTEM_TIME',blocking=True)
-                    now = float( dt.timestamp( dt.now() ) - self.fc_port.time_since('SYSTEM_TIME') )
-                    self.fc_time = float( msg.time_unix_usec / 1e6 )
-                    self.fc_offset = int( ( (self.fc_time + self.fc_lt) - now ) * 1000 )
+                        # send ms measure
+                        count = count + 1
+                        tmp = tmp + (self.fc_offset / settings['TransmitPacket'])
+                        if count is settings['TransmitPacket']:
+                            enteredTime = time.time() - start
+                            if settings['SendTerm'] - enteredTime >= 0:
+                                time.sleep(settings['SendTerm'] - enteredTime)
                             
-                    # send ms measure
-                    count = count + 1
-                    tmp = tmp + (self.fc_offset / settings['TransmitPacket'])
-                    if count is settings['TransmitPacket']:
-                        enteredTime = time.time() - start
-                        if settings['SendTerm'] - enteredTime >= 0:
-                            time.sleep(settings['SendTerm'] - enteredTime)
-                                
-                        # more than 200ms companste gps time assumes gps sync problem and so this problem is ignored.
-                        if abs(tmp) < 200:
-                            sock.sendto(str(tmp).encode(), ADDR)
+                            # more than 200ms companste gps time assumes gps sync problem and so this problem is ignored.
+                            if abs(tmp) < 200:
+                                sock.sendto(str(tmp).encode(), ADDR)
                             count = 0
                             tmp = 0
-                                
+                            
                             # startTime initialization
                             start = time.time()
 
-            except SerialException:
-                print('{} is dead'.format(self.connectionLink))
-                self.fc_port = None
-                return
+                except: # serial.SerialException
+                    print('{} is dead'.format(self.connectionLink))
+                    self.fc_port = None
+                    return
 
         else:
             return
