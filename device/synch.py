@@ -160,7 +160,7 @@ class Monitor(Thing):
                             connection = True
                             print('Success ReOpenLink {}'.format(self.connectionLink))
                         except:
-                            time.sleep(3)
+                            time.sleep(10)
                             pass
             
             start = time.time()
@@ -199,7 +199,7 @@ class Monitor(Thing):
                             connection = True
                             print('Success ReOpenLink {}'.format(self.connectionLink))
                         except:
-                            time.sleep(3)
+                            time.sleep(10)
                             pass
                 
                 # send ms measure
