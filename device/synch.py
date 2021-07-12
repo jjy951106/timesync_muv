@@ -177,6 +177,8 @@ class Monitor(Thing):
                         self.fc_time = float( msg.time_unix_usec / 1e6 )
                         self.fc_offset = int( ( (self.fc_time + self.fc_lt) - now ) * 1000 )
                         
+                        print(msg)
+                        
                         # send ms measure
                         count = count + 1
                         tmp = tmp + (self.fc_offset / settings['TransmitPacket'])
