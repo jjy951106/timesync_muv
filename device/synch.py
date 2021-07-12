@@ -143,10 +143,23 @@ class Monitor(Thing):
       
             # Set FC time
             while True:
-
-                self.fc_port.mav.system_time_send( int(time.time() * 1e6) , 0 )
-                msg = self.fc_port.recv_match(type='SYSTEM_TIME', blocking=True)
-                if msg.time_unix_usec > 10: break    
+                
+                try:
+                    self.fc_port.mav.system_time_send( int(time.time() * 1e6) , 0 )
+                    msg = self.fc_port.recv_match(type='SYSTEM_TIME', blocking=True)
+                    if msg.time_unix_usec > 10: break
+                    
+                except SerialException as ex:
+                    print('{} is dead'.format(self.connectionLink))
+                    self.fc_port = None
+                    connection = False
+                    while(connection is False):
+                        try:
+                            self.fc_port = mavutil.mavlink_connection(self.connectionLink)
+                            connection = True
+                            print('Success ReOpenLink {}'.format(self.connectionLink))
+                        except:
+                            pass
             
             start = time.time()
             
