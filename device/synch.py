@@ -32,6 +32,7 @@ class Monitor(Thing):
         self.fc_lt = 0
         self.fc_time = 0
         self.fc_offset = 0
+        self.connectionLink = ''
 
         # client path check
         if os.path.exists('./linux_client_x86'):
@@ -155,7 +156,6 @@ class Monitor(Thing):
                 tx_time = dt.timestamp(dt.now())
 
                 try:
-                
                     self.fc_port.mav.timesync_send(0, int( tx_time ))
 
                     # Time sync message reception
@@ -174,7 +174,16 @@ class Monitor(Thing):
                     self.fc_offset = int( ( (self.fc_time + self.fc_lt) - now ) * 1000 )
                 
                 except SerialException as ex:
-                    print('error')
+                    print('{} is dead'.format(self.connectionLink))
+                    self.fc_port = None
+                    connection = False
+                    while(connection is False):
+                        try:
+                            self.fc_port = mavutil.mavlink_connection(self.connectionLink)
+                            connection = True
+                            print('Success ReOpenLink {}'.format(self.connectionLink))
+                        except:
+                            pass
                 
                 # send ms measure
                 count = count + 1

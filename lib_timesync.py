@@ -113,6 +113,7 @@ if __name__ == '__main__':
             try:
                 monitor.fc_port = mavutil.mavlink_connection(connectionLink[connectionIndex])
                 connection = True
+                monitor.connectionLink = connectionLink[connectionIndex]
                 print('Success OpenLink {}'.format(connectionLink[connectionIndex]))
             except:
                 connectionIndex = connectionIndex + 1
