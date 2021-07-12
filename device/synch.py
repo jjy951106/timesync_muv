@@ -212,11 +212,9 @@ class Monitor(Thing):
                             time.sleep(1)
                             pass
                     continue
-                    
-                    #break
 
-        #else:
-        #    return
+        else:
+            return
 
 
 
