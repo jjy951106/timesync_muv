@@ -153,7 +153,6 @@ class Monitor(Thing):
                         
                         self.fc_port.mav.system_time_send( int(time.time() * 1e6) , 0 )
                         msg = self.fc_port.recv_match(type='SYSTEM_TIME', blocking=True)
-                        print(msg)
                         if msg.time_unix_usec > 10: break
                     
                     start = time.time()
