@@ -150,7 +150,7 @@ class Monitor(Thing):
                     if msg.time_unix_usec > 10: break
                     
                 except SerialException as ex:
-                    print('{} is dead'.format(self.connectionLink))
+                    print('{} is dead!'.format(self.connectionLink))
                     self.fc_port = None
                     connection = False
                     while(connection is False):
