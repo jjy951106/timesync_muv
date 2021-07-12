@@ -204,7 +204,8 @@ class Monitor(Thing):
                             print('try')
                             self.fc_port = mavutil.mavlink_connection(connectionLink[connectionIndex])
                             connection = True
-                            print('Success ReOpenLink {}'.format(connectionLink[connectionIndex]))
+                            self.connectionLink = connectionLink[connectionIndex]
+                            print('Success ReopenLink {}'.format(connectionLink[connectionIndex]))
                         except:
                             connectionIndex = connectionIndex + 1
                             if connectionIndex == len(connectionLink): 
