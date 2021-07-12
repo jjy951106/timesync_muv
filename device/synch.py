@@ -7,6 +7,7 @@ import subprocess
 import platform
 import json
 import time
+import serial
 from socket import *
 
 # Warning!! In each class, one must implement only one method among get and control methods
@@ -191,7 +192,7 @@ class Monitor(Thing):
                         # startTime initialization
                         start = time.time()
 
-            except: # serial.SerialException
+            except serial.SerialException:
                 print('{} is dead'.format(self.connectionLink))
                 self.fc_port = None
                 pass
