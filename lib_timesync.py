@@ -116,7 +116,9 @@ if __name__ == '__main__':
                 print('Success OpenLink {}'.format(connectionLink[connectionIndex]))
             except:
                 connectionIndex = connectionIndex + 1
-                if connectionIndex == len(connectionLink): break
+                if connectionIndex == len(connectionLink): 
+                    print('FC connection fail')
+                    break
                 pass
     else : 
         monitor.fc_port = mavutil.mavlink_connection(argv[6])

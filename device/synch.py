@@ -150,23 +150,29 @@ class Monitor(Thing):
 
                 # Send timesync
                 tx_time = dt.timestamp(dt.now())
+
+                try:
                 
-                self.fc_port.mav.timesync_send(0, int( tx_time ))
+                    self.fc_port.mav.timesync_send(0, int( tx_time ))
 
-                # Time sync message reception
-                msg = self.fc_port.recv_match(type='TIMESYNC', blocking=True)
-                if msg.tc1 == 0:
-                    continue
-                else:
-                    rx_time = dt.timestamp(dt.now())
-                    if self.fc_lt != 0: self.fc_lt = (self.fc_lt + (rx_time - tx_time) / 2 ) / 2
-                    else: self.fc_lt = (rx_time - tx_time) / 2 
+                    # Time sync message reception
+                    msg = self.fc_port.recv_match(type='TIMESYNC', blocking=True)
+                    if msg.tc1 == 0:
+                        continue
+                    else:
+                        rx_time = dt.timestamp(dt.now())
+                        if self.fc_lt != 0: self.fc_lt = (self.fc_lt + (rx_time - tx_time) / 2 ) / 2
+                        else: self.fc_lt = (rx_time - tx_time) / 2 
 
-                # System time message reception
-                msg = self.fc_port.recv_match(type='SYSTEM_TIME',blocking=True)
-                now = float( dt.timestamp( dt.now() ) - self.fc_port.time_since('SYSTEM_TIME') )
-                self.fc_time = float( msg.time_unix_usec / 1e6 )
-                self.fc_offset = int( ( (self.fc_time + self.fc_lt) - now ) * 1000 )
+                    # System time message reception
+                    msg = self.fc_port.recv_match(type='SYSTEM_TIME',blocking=True)
+                    now = float( dt.timestamp( dt.now() ) - self.fc_port.time_since('SYSTEM_TIME') )
+                    self.fc_time = float( msg.time_unix_usec / 1e6 )
+                    self.fc_offset = int( ( (self.fc_time + self.fc_lt) - now ) * 1000 )
+                
+                except SerialException:
+                    print('error')
+                    pass
                 
                 # send ms measure
                 count = count + 1
