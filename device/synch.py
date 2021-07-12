@@ -194,13 +194,14 @@ class Monitor(Thing):
                 except SerialException as ex:
                     print('{} is dead'.format(self.connectionLink))
                     self.fc_port = None
-                    """
+
                     connectionLink = ['/dev/ttyACM0', '/dev/ttyACM1']
                     connectionIndex = 1
                     connection = False
                     time.sleep(15)
                     while(connection is False):
                         try:
+                            print('try')
                             self.fc_port = mavutil.mavlink_connection(connectionLink[connectionIndex])
                             connection = True
                             self.connectionLink = connectionLink[connectionIndex]
@@ -212,11 +213,11 @@ class Monitor(Thing):
                             time.sleep(1)
                             pass
                     continue
-                    """
-                    break
+                    
+                    #break
 
-        else:
-            return
+        #else:
+        #    return
 
 
 
