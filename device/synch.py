@@ -191,7 +191,8 @@ class Monitor(Thing):
                             # startTime initialization
                             start = time.time()
             
-                except SerialException as ex:
+                #except SerialException as ex:
+                except:
                     print('{} is dead'.format(self.connectionLink))
                     self.fc_port = None
 
@@ -212,8 +213,6 @@ class Monitor(Thing):
                                 connectionIndex = 1
                             time.sleep(1)
                             pass
-                    continue
-                except:
                     continue
                     
                     #break
