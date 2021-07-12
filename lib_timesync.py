@@ -103,7 +103,7 @@ if __name__ == '__main__':
 
     connection = False
     connectionIndex = 1
-    connectionLink = ['/dev/ttyACM0', '/dev/ttyACM1', '/dev/ttyAMA0',\
+    connectionLink = ['/dev/ttyACM0', '/dev/ttyACM1',\
                       '/dev/serial0', '/dev/serial1']
 
     # Serial port for FC connection
