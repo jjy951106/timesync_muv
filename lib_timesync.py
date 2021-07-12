@@ -128,9 +128,9 @@ if __name__ == '__main__':
     monitor.topic = '/MUV/data/' + lib["name"] + '/' + container_name
 
     # FC thread
-    if monitor.fc_port != None: 
-        FC_thread = threading.Thread(target = monitor.rtt_measure)
-        FC_thread.start()
+    #if monitor.fc_port != None: 
+    FC_thread = threading.Thread(target = monitor.rtt_measure)
+    FC_thread.start()
 
     # TAS thread
     msw_mqtt_connect(broker_ip, port)
