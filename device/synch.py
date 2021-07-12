@@ -151,6 +151,7 @@ class Monitor(Thing):
                         
                         self.fc_port.mav.system_time_send( int(time.time() * 1e6) , 0 )
                         msg = self.fc_port.recv_match(type='SYSTEM_TIME', blocking=True)
+                        print(msg)
                         if msg.time_unix_usec > 10: break
                     
                     start = time.time()
@@ -176,8 +177,6 @@ class Monitor(Thing):
                         now = float( dt.timestamp( dt.now() ) - self.fc_port.time_since('SYSTEM_TIME') )
                         self.fc_time = float( msg.time_unix_usec / 1e6 )
                         self.fc_offset = int( ( (self.fc_time + self.fc_lt) - now ) * 1000 )
-                        
-                        print(msg)
                         
                         # send ms measure
                         count = count + 1
