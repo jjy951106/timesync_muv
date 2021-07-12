@@ -175,7 +175,6 @@ class Monitor(Thing):
                 
                 except SerialException as ex:
                     print('error')
-                    pass
                 
                 # send ms measure
                 count = count + 1
