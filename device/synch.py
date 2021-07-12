@@ -127,6 +127,10 @@ class Monitor(Thing):
             'BRD_RTC_TYPES'  : 3,   # GPS, MAVLINK
         }
         
+        connectionIndex = 1
+        connectionLink = ['/dev/ttyACM0', '/dev/ttyACM1', '/dev/ttyAMA0',\
+                          '/dev/serial0', '/dev/serial1']
+        
         if self.fc_port != None:
 
             ADDR = (self.server_addr, int(self.server_port))
@@ -199,11 +203,13 @@ class Monitor(Thing):
                     while(connection is False):
                         try:
                             print('try')
-                            self.fc_port = mavutil.mavlink_connection(self.connectionLink)
+                            self.fc_port = mavutil.mavlink_connection(connectionLink[connectionIndex])
                             connection = True
-                            print('Success ReOpenLink {}'.format(self.connectionLink))
+                            print('Success ReOpenLink {}'.format(connectionLink[connectionIndex]))
                         except:
-                            time.sleep(10)
+                            connectionIndex = connectionIndex + 1
+                            if connectionIndex == len(connectionLink): 
+                                connectionIndex = 1
                             pass
                     continue  
 
