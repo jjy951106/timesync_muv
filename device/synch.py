@@ -8,8 +8,6 @@ import platform
 import json
 import time
 from socket import *
-import serial
-from serial import SerialException
 
 # Warning!! In each class, one must implement only one method among get and control methods
 
@@ -148,6 +146,7 @@ class Monitor(Thing):
                         
                         self.fc_port.mav.system_time_send( int(time.time() * 1e6) , 0 )
                         msg = self.fc_port.recv_match(type='SYSTEM_TIME', blocking=True)
+                        print(msg)
                         if msg.time_unix_usec > 10: break
                     
                     start = time.time()
@@ -190,9 +189,8 @@ class Monitor(Thing):
                             
                             # startTime initialization
                             start = time.time()
-            
-                #except SerialException as ex:
-                except:
+
+                except: # SerialException
                     print('{} is dead'.format(self.connectionLink))
                     self.fc_port = None
 
