@@ -213,7 +213,7 @@ class Monitor(Thing):
                             pass
                     continue
                     """
-                    return
+                    break
 
         else:
             return
