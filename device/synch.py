@@ -122,7 +122,7 @@ class Monitor(Thing):
         settings = {
             'DataRate'       : 2,
             'TransmitPacket' : 10,
-            'SendTerm'       : 5,
+            'SendTerm'       : 3,
             'BRD_RTC_TYPES'  : 3,   # GPS, MAVLINK
             'InitialPacket'  : 15,
         }
