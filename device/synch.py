@@ -47,8 +47,6 @@ class Monitor(Thing):
                     elif os.path.exists('./' + name + '/device/linux_client_x86'):
                         self.ct_path = os.path.abspath('./' + name + '/device/linux_client_x86')
                         break
-        
-        print(self.ct_path)
 
         # OS address bit check
         (os_bit, _) = platform.architecture()
@@ -56,6 +54,8 @@ class Monitor(Thing):
             self.client_sw = self.ct_path[:-2] + '86'
         elif os_bit == '64bit':
             self.client_sw = self.ct_path[:-2] + '64'
+            
+        print(self.client_sw)
 
         # Change of ownership
         subprocess.call(['sudo', 'chmod', '777', self.client_sw])
