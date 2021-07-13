@@ -190,8 +190,8 @@ class Monitor(Thing):
                             sock.sendto(str(tmp).encode(), ADDR)
                             initial = initial + 1
                             
-                        # more than 1s companste gps time assumes gps sync problem and so this problem is ignored.
-                        elif abs(tmp) < 1000:
+                        # more than 2min companste gps time assumes gps sync problem and so this problem is ignored.
+                        elif abs(tmp) <= 120000:
                             sock.sendto(str(tmp).encode(), ADDR)
                         count = 0
                         tmp = 0
