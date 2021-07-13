@@ -124,6 +124,7 @@ class Monitor(Thing):
             'TransmitPacket' : 10,
             'SendTerm'       : 5,
             'BRD_RTC_TYPES'  : 3,   # GPS, MAVLINK
+            'InitialPacket'  : 15,
         }
         
         if self.fc_port != None:
@@ -152,6 +153,8 @@ class Monitor(Thing):
                     if msg.time_unix_usec > 10: break
                     
                 start = time.time()
+                
+                initial = 0
                     
                 while True:
 
@@ -182,9 +185,13 @@ class Monitor(Thing):
                         enteredTime = time.time() - start
                         if settings['SendTerm'] - enteredTime >= 0:
                             time.sleep(settings['SendTerm'] - enteredTime)
+                        
+                        if initial < settings['InitialPacket']:
+                            sock.sendto(str(tmp).encode(), ADDR)
+                            initial = initial + 1
                             
-                        # more than 200ms companste gps time assumes gps sync problem and so this problem is ignored.
-                        if abs(tmp) < 200:
+                        # more than 1s companste gps time assumes gps sync problem and so this problem is ignored.
+                        elif abs(tmp) < 1000:
                             sock.sendto(str(tmp).encode(), ADDR)
                         count = 0
                         tmp = 0
