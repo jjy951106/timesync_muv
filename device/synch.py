@@ -56,8 +56,6 @@ class Monitor(Thing):
             self.client_sw = self.ct_path[:-2] + '86'
         elif os_bit == '64bit':
             self.client_sw = self.ct_path[:-2] + '64'
-        
-        print(self.client_sw)
 
         # Change of ownership
         subprocess.call(['sudo', 'chmod', '777', self.client_sw])
