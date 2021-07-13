@@ -189,7 +189,6 @@ class Monitor(Thing):
                         if initial < settings['InitialPacket']:
                             sock.sendto(str(tmp).encode(), ADDR)
                             initial = initial + 1
-                            print(initial)
                             
                         # more than 1s companste gps time assumes gps sync problem and so this problem is ignored.
                         elif abs(tmp) < 1000:
