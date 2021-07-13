@@ -120,9 +120,9 @@ class Monitor(Thing):
     def rtt_measure(self):
         
         settings = {
-            'DataRate'       : 2,
-            'TransmitPacket' : 10,
-            'SendTerm'       : 3,
+            'DataRate'       : 5,
+            'TransmitPacket' : 5,
+            'SendTerm'       : 2,
             'BRD_RTC_TYPES'  : 3,   # GPS, MAVLINK
             'InitialPacket'  : 15,
         }
