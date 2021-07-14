@@ -56,7 +56,11 @@ def send_data_to_msw (data_topic, obj_data):
 
 if __name__ == '__main__':
     
-    p = psutil.Process()
+    pid = os.getpid()
+    print(f'pid : {pid}')
+    p = psutil.Process(pid)
+    current_process_memory_usage_as_KB = p.memory_info()[0] / 2.**20
+    print(f"BEFORE CODE: Current memory KB   : {current_process_memory_usage_as_KB: 9.3f} KB")
 
     #os.system('sudo systemctl disable systemd-timesynch.service')
     os.system('sudo timedatectl set-ntp off')
