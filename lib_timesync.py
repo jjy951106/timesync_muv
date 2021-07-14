@@ -146,4 +146,6 @@ if __name__ == '__main__':
     while True:
         p.memory_info()
         print(f'1 {p.memory_info()}')
+        current_process_memory_usage_as_KB = p.memory_info()[0] / 2.**20
+        print(f"AFTER CODE: Current memory KB   : {current_process_memory_usage_as_KB: 9.3f} KB")
         time.sleep(5)
