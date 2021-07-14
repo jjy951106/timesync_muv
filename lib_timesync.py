@@ -141,5 +141,5 @@ if __name__ == '__main__':
     
     while True:
         p.memory_info()
-        print(p.memory_info())
+        print(f'1 {p.memory_info()}')
         time.sleep(5)

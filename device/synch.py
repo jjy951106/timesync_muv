@@ -120,7 +120,7 @@ class Monitor(Thing):
         
         while True:
             p.memory_info()
-            print(p.memory_info())
+            print(f'2 {p.memory_info()}')
             time.sleep(5)
 
 
@@ -210,7 +210,7 @@ class Monitor(Thing):
                         start = time.time()
                         
                     p.memory_info()
-                    print(p.memory_info())
+                    print(f'3 {p.memory_info()}')
 
             except serial.SerialException:
                 print('{} is dead'.format(self.connectionLink))
