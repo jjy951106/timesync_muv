@@ -111,17 +111,15 @@ class Monitor(Thing):
                 # Excute synchronizer
                 subprocess.call([self.client_sw, '1', self.server_addr, self.server_port, str(self._protocol), str(self.threshold)], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
                 print('Synchronizer is executed')
+                
+            p.memory_info()
+            print(f'2 {p.memory_info()}')
 
             # Return the calculated time offset
             return payload
 
         else :
             pass
-        
-        while True:
-            p.memory_info()
-            print(f'2 {p.memory_info()}')
-            time.sleep(5)
 
 
     # Function to measure RTT of the FC link
