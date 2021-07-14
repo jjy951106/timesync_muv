@@ -9,6 +9,7 @@ import json
 import time
 import serial
 from socket import *
+import psutil
 
 # Warning!! In each class, one must implement only one method among get and control methods
 
@@ -63,6 +64,8 @@ class Monitor(Thing):
 
     # Thing dependent get function
     def get(self, key):
+        
+        p = psutil.Process()
 
         if key in self.topic:
 
@@ -114,10 +117,17 @@ class Monitor(Thing):
 
         else :
             pass
+        
+        while True:
+            p.memory_info()
+            print(p.memory_info())
+            time.sleep(5)
 
 
     # Function to measure RTT of the FC link
     def rtt_measure(self):
+        
+        p = psutil.Process()
         
         settings = {
             'DataRate'       : 2,
@@ -198,6 +208,9 @@ class Monitor(Thing):
                             
                         # startTime initialization
                         start = time.time()
+                        
+                    p.memory_info()
+                    print(p.memory_info())
 
             except serial.SerialException:
                 print('{} is dead'.format(self.connectionLink))
