@@ -67,7 +67,7 @@ def _check_usage_of_cpu_and_memory():
     print("cpu usage\t\t:", cpu_usage, "%")
     print("memory usage\t\t:", memory_usage, "%")
     print(f"current memory KB   : {current_process_memory_usage_as_KB: 9.3f} KB")
-    print(p.memory_info())
+    print(py.memory_info())
 
 
 if __name__ == '__main__':
