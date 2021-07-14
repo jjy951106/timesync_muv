@@ -9,7 +9,6 @@ import json
 import time
 import serial
 from socket import *
-import psutil
 
 # Warning!! In each class, one must implement only one method among get and control methods
 
@@ -64,8 +63,6 @@ class Monitor(Thing):
 
     # Thing dependent get function
     def get(self, key):
-        
-        p = psutil.Process()
 
         if key in self.topic:
 
@@ -111,9 +108,6 @@ class Monitor(Thing):
                 # Excute synchronizer
                 subprocess.call([self.client_sw, '1', self.server_addr, self.server_port, str(self._protocol), str(self.threshold)], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
                 print('Synchronizer is executed')
-                
-            p.memory_info()
-            print(f'2 {p.memory_info()}')
 
             # Return the calculated time offset
             return payload
@@ -206,9 +200,6 @@ class Monitor(Thing):
                             
                         # startTime initialization
                         start = time.time()
-                        
-                    p.memory_info()
-                    print(f'3 {p.memory_info()}')
 
             except serial.SerialException:
                 print('{} is dead'.format(self.connectionLink))
