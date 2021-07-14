@@ -4,6 +4,7 @@ from socket import *
 import paho.mqtt.client as mqtt
 from pymavlink import mavutil
 import os, sys, threading
+import psutil
 
 global lib_topic
 global lib_mqtt_client
@@ -54,6 +55,8 @@ def send_data_to_msw (data_topic, obj_data):
 
 
 if __name__ == '__main__':
+    
+    p = psutil.Process()
 
     #os.system('sudo systemctl disable systemd-timesynch.service')
     os.system('sudo timedatectl set-ntp off')
@@ -135,3 +138,8 @@ if __name__ == '__main__':
     # TAS thread
     msw_mqtt_connect(broker_ip, port)
     monitor_tis = MUV_TIS(monitor, lib_mqtt_client).start()
+    
+    while True:
+        p.memory_info()
+        print(p.memory_info())
+        time.sleep(5)
