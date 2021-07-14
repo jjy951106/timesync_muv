@@ -51,16 +51,22 @@ def send_data_to_msw (data_topic, obj_data):
     global lib_mqtt_client
     
     lib_mqtt_client.publish(data_topic, obj_data)
-
+    
+def _check_usage_of_cpu_and_memory():
+    
+    pid = os.getpid()
+    py  = psutil.Process(pid)
+    
+    cpu_usage   = os.popen("ps aux | grep " + str(pid) + " | grep -v grep | awk '{print $3}'").read()
+    cpu_usage   = cpu_usage.replace("\n","")
+    
+    memory_usage  = round(py.memory_info()[0] /2.**30, 2)
+    
+    print("cpu usage\t\t:", cpu_usage, "%")
+    print("memory usage\t\t:", memory_usage, "%")
 
 
 if __name__ == '__main__':
-    
-    pid = os.getpid()
-    print(f'pid : {pid}')
-    p = psutil.Process(pid)
-    current_process_memory_usage_as_KB = p.memory_info()[0] / 2.**20
-    print(f"BEFORE CODE: Current memory KB   : {current_process_memory_usage_as_KB: 9.3f} KB")
 
     #os.system('sudo systemctl disable systemd-timesynch.service')
     os.system('sudo timedatectl set-ntp off')
@@ -144,8 +150,6 @@ if __name__ == '__main__':
     monitor_tis = MUV_TIS(monitor, lib_mqtt_client).start()
     
     while True:
-        p.memory_info()
-        print(f'1 {p.memory_info()}')
-        current_process_memory_usage_as_KB = p.memory_info()[0] / 2.**20
-        print(f"AFTER CODE: Current memory KB   : {current_process_memory_usage_as_KB: 9.3f} KB")
-        time.sleep(5)
+        _check_usage_of_cpu_and_memory()
+        time.sleep(3)
+    
