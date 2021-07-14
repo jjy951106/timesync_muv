@@ -153,7 +153,8 @@ if __name__ == '__main__':
     msw_mqtt_connect(broker_ip, port)
     monitor_tis = MUV_TIS(monitor, lib_mqtt_client).start()
     
+    """
     while True:
         _check_usage_of_cpu_and_memory()
         time.sleep(3)
-    
+    """
