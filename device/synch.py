@@ -119,8 +119,6 @@ class Monitor(Thing):
     # Function to measure RTT of the FC link
     def rtt_measure(self):
         
-        p = psutil.Process()
-        
         settings = {
             'DataRate'       : 2,
             'TransmitPacket' : 5,
