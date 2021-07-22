@@ -2,6 +2,8 @@ from select import *
 from threading import *
 import time
 
+
+
 # Client uplink thread
 class Client_up(Thread):
     
@@ -69,10 +71,10 @@ class MUV_up(Thread):
                 time.sleep(self.interval)
                 
                 # Sending sensor values
-
                 payload = self.thing.read(self.topic)
-                self.rf_sc.publish(self.thing.topic, payload)
                 print(payload)
+                self.rf_sc.publish(self.thing.topic, payload)
+                # print('Successfully published')
                     
             except KeyboardInterrupt:
                 self.rf_sc.close()

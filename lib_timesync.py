@@ -53,6 +53,7 @@ def on_message(client, userdata, msg):
     global missionPort
     global monitor
     message = str(msg.payload.decode("utf-8"))
+    print('[ ' + msg.topic + ' ] ' + message)
 
     f = fifo()
     mav = ardupilotmega.MAVLink(f)
@@ -68,18 +69,22 @@ def on_message(client, userdata, msg):
             m.pack(mav)
             tx_msg = m.get_msgbuf()
             client.publish(monitor.topic_req, tx_msg)
-            print('Time sync is published')
+            
         else:
             rx_time = dt.timestamp(dt.now())
             if monitor.fc_lt != 0: monitor.fc_lt = (monitor.fc_lt + (rx_time - monitor.tx_time) / 2 ) / 2
             else: monitor.fc_lt = (rx_time - monitor.tx_time) / 2
     else:
         # System time message reception
+        print('System time is received')
         rx_msg = mav.parse_char(mavMsg)
         now = float( dt.timestamp( dt.now() ) )
         monitor.fc_time = float( rx_msg.time_unix_usec / 1e6 )
         monitor.fc_offset = int( ( (monitor.fc_time + monitor.fc_lt) - now ) * 1000 )
-        
+        print('Time calculation')
+    
+    print(rx_msg)
+
 
 def msw_mqtt_connect(broker_ip, port):
     global lib_topic
@@ -113,8 +118,8 @@ if __name__ == '__main__':
 
     try:
         lib = dict()
-        print('./' + my_lib_name + '.json')
-        with open('./' + my_lib_name + '.json', 'r') as f:
+        print('./' + msw_dir_name + '/' + my_lib_name + '.json')
+        with open('./' + msw_dir_name + '/' + my_lib_name + '.json', 'r') as f:
             lib = json.load(f)
 
     except:
@@ -122,13 +127,13 @@ if __name__ == '__main__':
         lib["name"] = my_lib_name
         lib["target"] = 'armv6'
         lib["description"] = "[name] [server ip] [interval] [protocol] [threshold] [server port]"
-        lib["scripts"] = "./lib_timesync 203.253.128.177 1 udp 5 5005"
+        lib["scripts"] = "./lib_timesync 1.239.197.74 5 udp 5 5005"
         lib["data"] = ["TimeSync", "Req"]
         lib["control"] = ["system_time", "timesync"]
         lib = json.dumps(lib, indent=4)
         lib = json.loads(lib)
 
-        with open('./' + my_lib_name + '.json', 'w', encoding='utf-8') as json_file:
+        with open('./' + msw_dir_name + '/' + my_lib_name + '.json', 'w', encoding='utf-8') as json_file:
             json.dump(lib, json_file, indent=4)
 
 
@@ -146,17 +151,28 @@ if __name__ == '__main__':
     argv[4] = [동기화 문턱 값 = 5ms]
     argv[5] = [동기화 port = 5005]
     '''
+    
+    '''
+    input_par = argv[1].split(' ')
+    print(input_par)
+    if len(input_par) < 2: monitor.server_addr = '1.239.197.74'
+    else : monitor.server_addr = input_par[0]
+    if len(input_par) < 3: monitor.interval = 3   # Interval for offset report to Mobius (second)
+    else : monitor.interval = int( input_par[1] )
+    if len(input_par) < 4: monitor.trans_protocol = 'udp'
+    else : monitor.trans_protocol = input_par[2]
+    if len(input_par) < 5: monitor.threshold = 5  # Offset threshold for synchronization (millisecond)
+    else : monitor.threshold = int( input_par[3] )
+    if len(input_par) < 6: monitor.server_port = '5005'
+    else : monitor.server_port = input_par[4]
+    '''
+    
+    monitor.server_addr = '1.239.197.74'
+    monitor.interval = 5
+    monitor.trans_protocol = 'udp'
+    monitor.threshold = 5
+    monitor.server_port = '5005'
 
-    if len(argv) < 2: monitor.server_addr = '1.239.197.74'
-    else : monitor.server_addr = argv[1]
-    if len(argv) < 3: monitor.interval = 3   # Interval for offset report to Mobius (second)
-    else : monitor.interval = int( argv[2] )
-    if len(argv) < 4: monitor.trans_protocol = 'udp'
-    else : monitor.trans_protocol = argv[3]
-    if len(argv) < 5: monitor.threshold = 5  # Offset threshold for synchronization (millisecond)
-    else : monitor.threshold = int( argv[4] )
-    if len(argv) < 6: monitor.server_port = '5005'
-    else : monitor.server_port = argv[5]
 
     # Define resource
     container_name = lib["data"][0]
