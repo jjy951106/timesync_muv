@@ -206,8 +206,3 @@ class Monitor(Thing):
 
         else:
             return
-
-
-
-        
-        

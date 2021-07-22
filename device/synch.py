@@ -73,12 +73,9 @@ class Monitor(Thing):
                 self._protocol = 1
             elif self.trans_protocol == 'udp':
                 self._protocol = 0
-            
-            received_offset = False
                         
             # Time offset calculation
             mc_offset = subprocess.getoutput( self.client_sw + ' 3 ' + self.server_addr + ' ' + self.server_port + ' ' + str(self._protocol) )
-            print(mc_offset)
                 
             data_temp = mc_offset.split('+')
             del data_temp[-1]
