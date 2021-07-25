@@ -57,9 +57,6 @@ class MUV_up(Thread):
         
     def run(self):
         # Data transmission
-        
-        print('MUV_up')
-        
         while True:
             
             try:
@@ -96,8 +93,6 @@ class Client_down(Thread):
         print(thing.name + ' interface is started')
         
     def run(self):
-        
-        print('Client_down')
         
         # Mux list
         input_conn = [self.rf_sc]
