@@ -181,13 +181,15 @@ if __name__ == '__main__':
     monitor.topic_systime = '/MUV/control/' + lib["name"] + '/' + lib["control"][0]
     monitor.topic_timesync = '/MUV/control/' + lib["name"] + '/' + lib["control"][1]
 
-    # FC thread
-    FC_thread = threading.Thread(target = monitor.rtt_measure())
-    FC_thread.start()
-
     # TAS thread
     msw_mqtt_connect(broker_ip, port)
     lib_mqtt_client.subscribe(monitor.topic_timesync)
     lib_mqtt_client.subscribe(monitor.topic_systime)
-    monitor_tis = MUV_TIS(monitor, lib_mqtt_client).start()
+    # monitor_tis = MUV_TIS(monitor, lib_mqtt_client).start()
+    MUV_TIS_DEF(monitor, lib_mqtt_client)
+
+    # FC thread
+    FC_thread = threading.Thread(target = monitor.rtt_measure())
+    FC_thread.start()
+    
 
