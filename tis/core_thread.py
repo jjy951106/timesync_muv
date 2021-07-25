@@ -78,6 +78,7 @@ class MUV_up(Thread):
                     
             except KeyboardInterrupt:
                 self.rf_sc.close()
+                return 0
         
 
 
@@ -142,6 +143,7 @@ class Client_down(Thread):
                 
                 # Close serial
                 self.rf_sc.close()
+                return 0
                 
                 
                 
