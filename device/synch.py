@@ -162,9 +162,6 @@ class Monitor(Thing):
                 # startTime initialization
                 start = time.time()
 
-        else:
-            return
-
 
 
         
