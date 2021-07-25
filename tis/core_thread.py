@@ -57,7 +57,11 @@ class MUV_up(Thread):
         
     def run(self):
         # Data transmission
+        
+        print('MUV_up')
+        
         while True:
+            
             try:
                 
                 if len(self.topic) == 0:
@@ -78,7 +82,6 @@ class MUV_up(Thread):
                     
             except KeyboardInterrupt:
                 self.rf_sc.close()
-                return 0
         
 
 
@@ -93,6 +96,8 @@ class Client_down(Thread):
         print(thing.name + ' interface is started')
         
     def run(self):
+        
+        print('Client_down')
         
         # Mux list
         input_conn = [self.rf_sc]
@@ -143,7 +148,6 @@ class Client_down(Thread):
                 
                 # Close serial
                 self.rf_sc.close()
-                return 0
                 
                 
                 

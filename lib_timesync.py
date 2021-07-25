@@ -185,8 +185,7 @@ if __name__ == '__main__':
     msw_mqtt_connect(broker_ip, port)
     lib_mqtt_client.subscribe(monitor.topic_timesync)
     lib_mqtt_client.subscribe(monitor.topic_systime)
-    # monitor_tis = MUV_TIS(monitor, lib_mqtt_client).start()
-    MUV_TIS_DEF(monitor, lib_mqtt_client)
+    monitor_tis = MUV_TIS(monitor, lib_mqtt_client).start()
 
     # FC thread
     FC_thread = threading.Thread(target = monitor.rtt_measure())
