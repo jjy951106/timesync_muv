@@ -65,6 +65,8 @@ class MUV_TIS(Thread):
             
             # Start all threads and sleep repeatedly
             for thr in threads: thr.start()
+            
+            return thr
                             
         except KeyboardInterrupt:
             self.sc.close()
