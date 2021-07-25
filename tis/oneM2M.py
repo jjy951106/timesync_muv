@@ -1,10 +1,5 @@
 from tis.core_thread import *
 import json
-import inspect
-import ctypes
-
-def stop_thread(thread):
-    _async_raise(thread.ident, SystemExit)
 
 # OneM2M TIS class for devices
 class TIS(Thread):
@@ -73,7 +68,29 @@ class MUV_TIS(Thread):
                             
         except KeyboardInterrupt:
             self.sc.close()
-            for thr in threads: stop_thread(thr)
+            
+# OneM2M TIS def for devices
+def MUV_TIS_DEF(thing, sc, rf_sc = None):
+
+    try:
+            
+        # Initialization for threads
+        threads = []
+            
+        # Wi-Fi connection
+        if rf_sc == None: conn = sc
+        # Other connection
+        else: conn = rf_sc.ser
+                
+        # Creation of threads
+        if thing.protocol == 'up': threads.append( MUV_up(conn, thing) )
+        elif thing.protocol == 'down': threads.append( Client_down(conn, thing) )
+            
+        # Start all threads and sleep repeatedly
+        for thr in threads: thr.start()
+                            
+    except KeyboardInterrupt:
+        sc.close()
 
 
 
