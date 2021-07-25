@@ -152,6 +152,14 @@ class Monitor(Thing):
             try:
                 # 2hz
                 time.sleep(settings['Hz'])
+                    
+                # Send timesync
+                self.tx_time = dt.timestamp(dt.now())
+                m = mav.timesync_encode(0, int( self.tx_time ))
+                m.pack(mav)
+                tx_msg = m.get_msgbuf()
+                sc.publish(self.topic_req, tx_msg)
+                # print('Time synch is published')
 
                 # send ms measure
                 count = count + 1
@@ -161,14 +169,6 @@ class Monitor(Thing):
                     enteredTime = time.time() - start
                     if settings['SendTerm'] - enteredTime >= 0:
                         time.sleep(settings['SendTerm'] - enteredTime)
-                        
-                    # Send timesync
-                    self.tx_time = dt.timestamp(dt.now())
-                    m = mav.timesync_encode(0, int( self.tx_time ))
-                    m.pack(mav)
-                    tx_msg = m.get_msgbuf()
-                    sc.publish(self.topic_req, tx_msg)
-                    print('Time synch is published')
                     
                     if tmp is not 0:
                         if initial < settings['InitialPacket']:
