@@ -134,33 +134,38 @@ class Monitor(Thing):
         initial = 0
                     
         while True:
-
-            # 2hz
-            time.sleep(settings['Hz'])
-
-            # send ms measure
-            count = count + 1
-            tmp = tmp + (self.fc_offset / settings['TransmitPacket'])
             
-            if count is settings['TransmitPacket']:
-                enteredTime = time.time() - start
-                if settings['SendTerm'] - enteredTime >= 0:
-                    time.sleep(settings['SendTerm'] - enteredTime)
+            try:
+                # 2hz
+                time.sleep(settings['Hz'])
+
+                # send ms measure
+                count = count + 1
+                tmp = tmp + (self.fc_offset / settings['TransmitPacket'])
                 
-                if tmp is not 0:
-                    if initial < settings['InitialPacket']:
-                        sock.sendto(str(tmp).encode(), ADDR)
-                        initial = initial + 1
-                            
-                    # more than 2min companste gps time assumes gps sync problem and so this problem is ignored.
-                    elif abs(tmp) <= 120000:
-                        sock.sendto(str(tmp).encode(), ADDR)
-                
-                count = 0
-                tmp = 0
-                            
-                # startTime initialization
-                start = time.time()
+                if count is settings['TransmitPacket']:
+                    enteredTime = time.time() - start
+                    if settings['SendTerm'] - enteredTime >= 0:
+                        time.sleep(settings['SendTerm'] - enteredTime)
+                    
+                    if tmp is not 0:
+                        if initial < settings['InitialPacket']:
+                            sock.sendto(str(tmp).encode(), ADDR)
+                            initial = initial + 1
+                                
+                        # more than 2min companste gps time assumes gps sync problem and so this problem is ignored.
+                        elif abs(tmp) <= 120000:
+                            sock.sendto(str(tmp).encode(), ADDR)
+                    
+                    count = 0
+                    tmp = 0
+                                
+                    # startTime initialization
+                    start = time.time()
+            
+            except KeyboardInterrupt:
+                print(1)
+                pass
 
 
 
