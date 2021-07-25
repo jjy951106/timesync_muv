@@ -69,6 +69,7 @@ class MUV_TIS(Thread):
                             
         except KeyboardInterrupt:
             self.sc.close()
+            for thr in threads: thr.join()
 
 
 
