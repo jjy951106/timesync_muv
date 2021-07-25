@@ -81,7 +81,7 @@ class MUV_up(Thread):
         
 
 
-# Client downlink thread
+# Client downlink threadN
 class Client_down(Thread):
     
     def __init__(self, rf_sc, thing):
