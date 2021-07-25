@@ -187,8 +187,9 @@ if __name__ == '__main__':
     lib_mqtt_client.subscribe(monitor.topic_systime)
     monitor_tis = MUV_TIS(monitor, lib_mqtt_client).start()
 
+    """
     # FC thread
     FC_thread = threading.Thread(target = monitor.rtt_measure(monitor_tis, lib_mqtt_client))
     FC_thread.start()
-    
+    """
 

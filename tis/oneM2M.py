@@ -66,7 +66,9 @@ class MUV_TIS(Thread):
             # Start all threads and sleep repeatedly
             for thr in threads: thr.start()
             
-            return thr
+            # FC thread
+            FC_thread = threading.Thread(target = self.thing.rtt_measure(thr, self.sc))
+            FC_thread.start()
                             
         except KeyboardInterrupt:
             self.sc.close()
