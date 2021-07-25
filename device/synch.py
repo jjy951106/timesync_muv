@@ -164,7 +164,7 @@ class Monitor(Thing):
                     start = time.time()
             
             except KeyboardInterrupt:
-                monitor_tis.stop()
+                monitor_tis.join()
                 sc.close()
                 return 0
 
