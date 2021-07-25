@@ -1,6 +1,10 @@
 from tis.core_thread import *
 import json
+import inspect
+import ctypes
 
+def stop_thread(thread):
+    _async_raise(thread.ident, SystemExit)
 
 # OneM2M TIS class for devices
 class TIS(Thread):
@@ -69,7 +73,7 @@ class MUV_TIS(Thread):
                             
         except KeyboardInterrupt:
             self.sc.close()
-            for thr in threads: thr.join()
+            for thr in threads: stop_thread(thr)
 
 
 
