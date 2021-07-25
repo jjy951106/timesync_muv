@@ -115,7 +115,7 @@ class Monitor(Thing):
 
 
     # Function to measure RTT of the FC link
-    def rtt_measure(self, monitor_tis, sc):
+    def rtt_measure(self, monitor, sc):
 
         settings = {
             'SendTerm'       : 4,
@@ -164,7 +164,7 @@ class Monitor(Thing):
                     start = time.time()
             
             except KeyboardInterrupt:
-                monitor_tis.join()
+                monitor.join()
                 sc.close()
                 return 0
 
