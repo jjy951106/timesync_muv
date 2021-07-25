@@ -73,21 +73,25 @@ class Monitor(Thing):
                 self._protocol = 1
             elif self.trans_protocol == 'udp':
                 self._protocol = 0
-                        
-            # Time offset calculation
-            mc_offset = subprocess.getoutput( self.client_sw + ' 3 ' + self.server_addr + ' ' + self.server_port + ' ' + str(self._protocol) )
-                
-            data_temp = mc_offset.split('+')
-            del data_temp[-1]
-                
+            
             payload = dict()
+            
+            Index = True
+            while Index:
+                # Time offset calculation
+                mc_offset = subprocess.getoutput( self.client_sw + ' 3 ' + self.server_addr + ' ' + self.server_port + ' ' + str(self._protocol) )
+                    
+                data_temp = mc_offset.split('+')
+                del data_temp[-1]
                 
-            try:
-                payload['server'] = dt.fromtimestamp( float( data_temp[0] ) ).astimezone(timezone('Asia/Seoul')).strftime('%Y%m%dT%H%M%S%f')[:-3]
-                payload['mc_time'] = dt.fromtimestamp( float( data_temp[1] ) ).astimezone(timezone('Asia/Seoul')).strftime('%Y%m%dT%H%M%S%f')[:-3]
-                payload['mc_offset'] = int( data_temp[2] )
-            except IndexError:
-                return 0
+                try:
+                    payload['server'] = dt.fromtimestamp( float( data_temp[0] ) ).astimezone(timezone('Asia/Seoul')).strftime('%Y%m%dT%H%M%S%f')[:-3]
+                    payload['mc_time'] = dt.fromtimestamp( float( data_temp[1] ) ).astimezone(timezone('Asia/Seoul')).strftime('%Y%m%dT%H%M%S%f')[:-3]
+                    payload['mc_offset'] = int( data_temp[2] )
+                    Index = False
+                except IndexError:
+                    time.sleep(3)
+                    continue 
 
             # Check the FC connection
             if self.fc_offset == 0:
@@ -114,14 +118,15 @@ class Monitor(Thing):
     def rtt_measure(self):
 
         settings = {
-            'TransmitPacket' : 10,
-            'SendTerm'       : 3,
+            'SendTerm'       : 4,
             'InitialPacket'  : 15,
+            'TransmitPacket' : 5,
+            'Hz'             : 0.6,
         }
 
         ADDR = (self.server_addr, int(self.server_port))
 
-        count = tmp = fc_lt = 0
+        count = tmp = 0
         sock = socket(AF_INET, SOCK_DGRAM)
 
         start = time.time()
@@ -131,31 +136,31 @@ class Monitor(Thing):
         while True:
 
             # 2hz
-            time.sleep(0.6)
+            time.sleep(settings['Hz'])
 
             # send ms measure
             count = count + 1
             tmp = tmp + (self.fc_offset / settings['TransmitPacket'])
+            
             if count is settings['TransmitPacket']:
                 enteredTime = time.time() - start
                 if settings['SendTerm'] - enteredTime >= 0:
                     time.sleep(settings['SendTerm'] - enteredTime)
-                        
-                if initial < settings['InitialPacket']:
-                    sock.sendto(str(tmp).encode(), ADDR)
-                    initial = initial + 1
+                
+                if tmp is not 0:
+                    if initial < settings['InitialPacket']:
+                        sock.sendto(str(tmp).encode(), ADDR)
+                        initial = initial + 1
                             
-                # more than 2min companste gps time assumes gps sync problem and so this problem is ignored.
-                elif abs(tmp) <= 120000:
-                    sock.sendto(str(tmp).encode(), ADDR)
+                    # more than 2min companste gps time assumes gps sync problem and so this problem is ignored.
+                    elif abs(tmp) <= 120000:
+                        sock.sendto(str(tmp).encode(), ADDR)
+                
                 count = 0
                 tmp = 0
                             
                 # startTime initialization
                 start = time.time()
-        
-           
-
 
         else:
             return
