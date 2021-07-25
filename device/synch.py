@@ -1,5 +1,7 @@
 from tis.oneM2M import *
 from pymavlink import mavutil
+import paho.mqtt.client as mqtt
+from pymavlink.dialects.v10 import ardupilotmega
 from datetime import datetime as dt
 from pytz import timezone
 import os, threading
@@ -9,6 +11,15 @@ import json
 import time
 import serial
 from socket import *
+
+class fifo(object):
+    def __init__(self):
+        self.buf = []
+    def write(self, data):
+        self.buf += data
+        return len(data)
+    def read(self):
+        return self.buf.pop(0)
 
 # Warning!! In each class, one must implement only one method among get and control methods
 
@@ -115,7 +126,7 @@ class Monitor(Thing):
 
 
     # Function to measure RTT of the FC link
-    def rtt_measure(self, monitor, sc):
+    def rtt_measure(self, muv_tis, sc):
 
         settings = {
             'SendTerm'       : 4,
@@ -123,6 +134,9 @@ class Monitor(Thing):
             'TransmitPacket' : 5,
             'Hz'             : 0.6,
         }
+        
+        f = fifo()
+        mav = ardupilotmega.MAVLink(f)
 
         ADDR = (self.server_addr, int(self.server_port))
 
@@ -147,6 +161,14 @@ class Monitor(Thing):
                     enteredTime = time.time() - start
                     if settings['SendTerm'] - enteredTime >= 0:
                         time.sleep(settings['SendTerm'] - enteredTime)
+                        
+                    # Send timesync
+                    self.tx_time = dt.timestamp(dt.now())
+                    m = mav.timesync_encode(0, int( self.tx_time ))
+                    m.pack(mav)
+                    tx_msg = m.get_msgbuf()
+                    sc.publish(self.topic_req, tx_msg)
+                    print('Time synch is published')
                     
                     if tmp is not 0:
                         if initial < settings['InitialPacket']:
@@ -164,11 +186,9 @@ class Monitor(Thing):
                     start = time.time()
             
             except KeyboardInterrupt:
-                monitor.join()
+                muv_tis.join()
                 sc.close()
                 return 0
-
-
 
         
         

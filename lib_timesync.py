@@ -12,16 +12,6 @@ global monitor_obj
 
 argv = sys.argv
 
-class fifo(object):
-    def __init__(self):
-        self.buf = []
-    def write(self, data):
-        self.buf += data
-        return len(data)
-    def read(self):
-        return self.buf.pop(0)
-
-
 def on_connect(client,userdata,flags, rc):
     global monitor
     print('[msw_mqtt_connect] connect to ', broker_ip)
