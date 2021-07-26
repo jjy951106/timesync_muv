@@ -3,6 +3,7 @@
 let mqtt = require('mqtt');
 let fs = require('fs');
 let spawn = require('child_process').spawn;
+let exec = require('child_process').exec;
 
 let my_msw_name = 'msw_timesync';
 
@@ -54,9 +55,9 @@ catch (e) {
         name: 'lib_timesync',
         target: 'armv6',
         description: '[name] [server ip] [interval] [protocol] [threshold] [server port]',
-        scripts: './lib_timesync 203.253.128.177 1 udp 5 5005',
-        data: ['TimeSync'],
-        control: ['']
+        scripts: './lib_timesync 203.253.128.177 5 udp 5 5005',
+        data: ['TimeSync', 'Req'],
+        control: ['system_time', 'timesync']
     };
     config.lib.push(add_lib);
 }
@@ -75,25 +76,13 @@ msw_sub_fc_topic.push('/Mobius/' + config.gcs + '/Drone_Data/' + config.drone + 
 let msw_sub_lib_topic = [];
 
 function exitHandler(options, exitCode) {
-    if (options.cleanup) console.log('clean');
-    if (exitCode || exitCode === 0) console.log(exitCode);
-    if (options.exit) process.exit();
+    if (options.exit){
+        exec('sudo kill $(pgrep -f msw_timesync)');
+        process.exit();
+    }
 }
 
-let run_lib2 = spawn('sudo', ['kill', '\'$(pgrep -f msw_timesync)\''])
-
-//do something when app is closing
-process.on('exit', exitHandler.bind(null,{cleanup:true}));
-
-//catches ctrl+c event
 process.on('SIGINT', exitHandler.bind(null, {exit:true}));
-
-// catches "kill pid" (for example: nodemon restart)
-process.on('SIGUSR1', exitHandler.bind(null, {exit:true}));
-process.on('SIGUSR2', exitHandler.bind(null, {exit:true}));
-
-//catches uncaught exceptions
-process.on('uncaughtException', exitHandler.bind(null, {exit:true}));
 
 function init() {
     if(config.lib.length > 0) {
@@ -166,74 +155,79 @@ let msw_mqtt_client = null;
 msw_mqtt_connect('localhost', 1883);
 
 function msw_mqtt_connect(broker_ip, port) {
-    if(msw_mqtt_client == null) {
-        let connectOptions = {
-            host: broker_ip,
-            port: port,
-//              username: 'keti',
-//              password: 'keti123',
-            protocol: "mqtt",
-            keepalive: 10,
-//              clientId: serverUID,
-            protocolId: "MQTT",
-            protocolVersion: 4,
-            clean: true,
-            reconnectPeriod: 2000,
-            connectTimeout: 2000,
-            rejectUnauthorized: false
-        };
+    try{
+        if(msw_mqtt_client == null) {
+            let connectOptions = {
+                host: broker_ip,
+                port: port,
+    //              username: 'keti',
+    //              password: 'keti123',
+                protocol: "mqtt",
+                keepalive: 10,
+    //              clientId: serverUID,
+                protocolId: "MQTT",
+                protocolVersion: 4,
+                clean: true,
+                reconnectPeriod: 2000,
+                connectTimeout: 2000,
+                rejectUnauthorized: false
+            };
 
-        msw_mqtt_client = mqtt.connect(connectOptions);
+            msw_mqtt_client = mqtt.connect(connectOptions);
 
-        msw_mqtt_client.on('connect', function () {
-            console.log('[msw_mqtt_connect] connected to ' + broker_ip);
-            for(idx in msw_sub_fc_topic) {
-                if(msw_sub_fc_topic.hasOwnProperty(idx)) {
-                    msw_mqtt_client.subscribe(msw_sub_fc_topic[idx]);
-                    console.log('[msw_mqtt] msw_sub_fc_topic[' + idx + ']: ' + msw_sub_fc_topic[idx]);
-                }
-            }
-        });
-
-        msw_mqtt_client.on('message', function (topic, message) {
-            for(let idx in msw_sub_muv_topic) {
-                if (msw_sub_muv_topic.hasOwnProperty(idx)) {
-                    if(topic === msw_sub_muv_topic[idx]) {
-                        setTimeout(on_receive_from_muv, parseInt(Math.random() * 5), topic, message.toString());
-                        break;
+            msw_mqtt_client.on('connect', function () {
+                console.log('[msw_mqtt_connect] connected to ' + broker_ip);
+                for(idx in msw_sub_fc_topic) {
+                    if(msw_sub_fc_topic.hasOwnProperty(idx)) {
+                        msw_mqtt_client.subscribe(msw_sub_fc_topic[idx]);
+                        console.log('[msw_mqtt] msw_sub_fc_topic[' + idx + ']: ' + msw_sub_fc_topic[idx]);
                     }
                 }
-            }
+            });
 
-            for(idx in msw_sub_lib_topic) {
-                if (msw_sub_lib_topic.hasOwnProperty(idx)) {
-                    if(topic === msw_sub_lib_topic[idx]) {
-                        let topic_arr = topic.split('/');
-                        if (topic_arr[topic_arr.length - 1] === config.lib[0].data[0]) {
-                            setTimeout(on_receive_from_lib, parseInt(Math.random() * 5), topic, message.toString());
-                            break;
-                        }
-                        else if (topic_arr[topic_arr.length - 1] === config.lib[0].data[1]) {
-                            setTimeout(on_receive_from_lib, parseInt(Math.random() * 5), topic, message.toString('hex'));
+            msw_mqtt_client.on('message', function (topic, message) {
+                for(let idx in msw_sub_muv_topic) {
+                    if (msw_sub_muv_topic.hasOwnProperty(idx)) {
+                        if(topic === msw_sub_muv_topic[idx]) {
+                            setTimeout(on_receive_from_muv, parseInt(Math.random() * 5), topic, message.toString());
                             break;
                         }
                     }
                 }
-            }
 
-            for(idx in msw_sub_fc_topic) {
-                if (msw_sub_fc_topic.hasOwnProperty(idx)) {
-                    if(topic === msw_sub_fc_topic[idx]) {
-                        setTimeout(on_process_fc_data, parseInt(Math.random() * 5), topic, message.toString());
-                        break;
+                for(idx in msw_sub_lib_topic) {
+                    if (msw_sub_lib_topic.hasOwnProperty(idx)) {
+                        if(topic === msw_sub_lib_topic[idx]) {
+                            let topic_arr = topic.split('/');
+                            if (topic_arr[topic_arr.length - 1] === config.lib[0].data[0]) {
+                                setTimeout(on_receive_from_lib, parseInt(Math.random() * 5), topic, message.toString());
+                                break;
+                            }
+                            else if (topic_arr[topic_arr.length - 1] === config.lib[0].data[1]) {
+                                setTimeout(on_receive_from_lib, parseInt(Math.random() * 5), topic, message.toString('hex'));
+                                break;
+                            }
+                        }
                     }
                 }
-            }
-        });
 
-        msw_mqtt_client.on('error', function (err) {
-            console.log(err.message);
-        });
+                for(idx in msw_sub_fc_topic) {
+                    if (msw_sub_fc_topic.hasOwnProperty(idx)) {
+                        if(topic === msw_sub_fc_topic[idx]) {
+                            setTimeout(on_process_fc_data, parseInt(Math.random() * 5), topic, message.toString());
+                            break;
+                        }
+                    }
+                }
+            });
+
+            msw_mqtt_client.on('error', function (err) {
+                console.log(err.message);
+            });
+        }
+    }
+    catch(e){
+        console.log('555555555555')
     }
 }
 
