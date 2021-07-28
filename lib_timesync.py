@@ -102,8 +102,16 @@ def send_data_to_msw (data_topic, obj_data):
     lib_mqtt_client.publish(data_topic, obj_data)
 
 
-
 if __name__ == '__main__':
+    
+    # 이렇게 안하면 system time, timesync message를 FC에서 안줌
+    subprocess.Popen(['sudo', 'mavproxy.py', '--master=/dev/ttyS0', '--baudrate', '57600'])
+    for killIter in range(5):
+        try:
+            os.system('sudo kill $(pgrep -f mav)')
+            time.sleep(1)
+        except:
+            pass
 
     #os.system('sudo systemctl disable systemd-timesynch.service')
     os.system('sudo timedatectl set-ntp off')
