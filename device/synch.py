@@ -159,7 +159,7 @@ class Monitor(Thing):
                 m.pack(mav)
                 tx_msg = m.get_msgbuf()
                 sc.publish(self.topic_req, tx_msg)
-                print('Time synch is published')
+                # print('Time synch is published')
 
                 # send ms measure
                 count = count + 1
