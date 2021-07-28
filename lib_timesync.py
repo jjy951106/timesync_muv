@@ -69,9 +69,10 @@ def on_message(client, userdata, msg):
         print('System time is received')
         rx_msg = mav.parse_char(mavMsg)
         now = float( dt.timestamp( dt.now() ) )
-        monitor.fc_time = float( rx_msg.time_unix_usec / 1e6 )
-        monitor.fc_offset = int( ( (monitor.fc_time + monitor.fc_lt) - now ) * 1000 )
-        print('Time calculation')
+        if rx_msg.time_unix_usec is not 0:
+            monitor.fc_time = float( rx_msg.time_unix_usec / 1e6 )
+            monitor.fc_offset = int( ( (monitor.fc_time + monitor.fc_lt) - now ) * 1000 )
+            print('Time calculation')
     
     print(rx_msg)
 
