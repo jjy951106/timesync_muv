@@ -104,6 +104,8 @@ def send_data_to_msw (data_topic, obj_data):
 
 if __name__ == '__main__':
     
+    time.sleep(10)
+    
     # 이렇게 안하면 system time, timesync message를 FC에서 안줌
     subprocess.Popen(['sudo', 'mavproxy.py', '--master=/dev/ttyS0', '--baudrate', '57600'])
     for killIter in range(5):
@@ -194,4 +196,14 @@ if __name__ == '__main__':
     FC_thread = threading.Thread(target = monitor.rtt_measure(monitor_tis, lib_mqtt_client))
     FC_thread.start()
     """
+    
+    # 이렇게 안하면 system time, timesync message를 FC에서 안줌
+    subprocess.Popen(['sudo', 'mavproxy.py', '--master=/dev/ttyS0', '--baudrate', '57600'])
+    for killIter in range(5):
+        try:
+            os.system('sudo kill $(pgrep -f mav)')
+            time.sleep(1)
+        except:
+            pass
+
 
