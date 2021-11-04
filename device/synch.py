@@ -109,7 +109,8 @@ class Monitor(Thing):
                 payload['fc_time'] = payload['mc_time']
             else:
                 payload['fc_time'] = dt.fromtimestamp( self.fc_time ).astimezone(timezone('Asia/Seoul')).strftime('%Y%m%dT%H%M%S%f')[:-3]
-            payload['fc_offset'] = self.fc_offset
+            #payload['fc_offset'] = self.fc_offset
+            payload['fc_offset'] = int( data_temp[2] - self.fc_offset )
             payload = json.dumps(payload, indent=4)
 
             # Time offset check

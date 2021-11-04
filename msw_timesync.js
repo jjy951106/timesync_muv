@@ -42,8 +42,7 @@ catch (e) {
     config.gcs = 'KETI_MUV';
     config.drone = 'FC_MUV_01';
     config.lib = [];
-}
-
+}rm
 // library 추가
 let add_lib = {};
 try {
